@@ -80,3 +80,33 @@ def get_user_transactions(request):
         except Exception as e:
             print(str(e))
             return HttpResponse("failed to fetch transactions", status=500)
+
+    return HttpResponse("Only Get method is allowed", status=405)
+
+@csrf_exempt
+def settle_amount(request):
+    if request.method == 'POST':
+        request_body = utils.parse_request_body(request)
+        email = request_body.get('user_email')
+        settle_user_email = request_body.get('settle_user_email')
+
+        if not email:
+            return HttpResponse("email should be present in params", status=400)
+        if not settle_user_email:
+            return HttpResponse("settle user email email should be present in params", status=400)
+
+        user = UserManager.get_user_by_email(email)
+        if not user:
+            return HttpResponse("invalid email present in params", status=400)
+        settle_user = UserManager.get_user_by_email(settle_user_email)
+        if not settle_user:
+            return HttpResponse("invalid settle user email present in params", status=400)
+
+        try:
+            ExpenseManager.settle_amount(user, settle_user)
+            return HttpResponse(json.dumps("Amount has been settled", cls=utils.decimal_encoder), status=200)
+        except Exception as e:
+            print(str(e))
+            return HttpResponse("failed to perform settlement", status=500)
+
+    return HttpResponse("Only Get method is allowed", status=405)

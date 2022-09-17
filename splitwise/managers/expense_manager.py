@@ -27,7 +27,14 @@ class ExpenseManager:
                 'Group': expense['group__name'],
                 'Expense': expense['expense__name'],
                 'Amount': expense['expense__amount'],
-                'Pending': expense['part_amount']
+                'Pending': 0 if is_settled else expense['part_amount']
             }
             transactions_list.append(transaction)
         return transactions_list
+
+    @staticmethod
+    def settle_amount(user, settled_user):
+        print(user.id, settled_user.id)
+        expenses = GroupExpense.objects.filter(user_id=user.id, expense__created_by_id=settled_user.id, is_settled=False)
+        print(expenses)
+        expenses.update(is_settled=True)

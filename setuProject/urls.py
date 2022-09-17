@@ -19,5 +19,5 @@ from splitwise import urls as splitwise_urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('splitwise/', include(splitwise_urls))
+    path('splitwise/', include(splitwise_urls)),
 ]
